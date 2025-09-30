@@ -43,6 +43,28 @@ app.get('/api/films/search', async (req, res) => {
   }
 });
 
+app.get('/api/films/search-by-genre', async (req, res) => {
+  try {
+    const genre = req.query.genre;
+    const films = await database.searchFilmsByGenre(genre);
+    res.json({ success: true, data: films });
+  } catch (error) {
+    console.log('error:', error.message);
+    res.json({ success: false, message: 'error searching films by genre' });
+  }
+});
+
+app.get('/api/films/search-by-actor', async (req, res) => {
+  try {
+    const actorName = req.query.actor;
+    const films = await database.searchFilmsByActor(actorName);
+    res.json({ success: true, data: films });
+  } catch (error) {
+    console.log('error:', error.message);
+    res.json({ success: false, message: 'error searching films by actor' });
+  }
+});
+
 app.get('/api/films', async (req, res) => {
   try {
     const films = await database.getAllFilms();
@@ -89,12 +111,13 @@ app.get('/api/customers', async (req, res) => {
 
 app.post('/api/rentals', async (req, res) => {
   try {
-    const { filmId, customerId } = req.body;
-    const result = await database.rentFilm(filmId, customerId);
+    const { filmId } = req.body;
+    // Use default customer ID 1 for demo purposes
+    const result = await database.rentFilm(filmId, 1);
     res.json({ success: true, data: result });
   } catch (error) {
     console.log('error:', error.message);
-    res.json({ success: false, message: 'error renting film' });
+    res.json({ success: false, message: error.message || 'error renting film' });
   }
 });
 
